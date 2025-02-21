@@ -56,7 +56,6 @@ Resources:
               message:
                 type: string
 
-
   GetAllPosts:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -86,7 +85,6 @@ Resources:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /posts/{arthur}
-            # Path: ApiPath
             Method: get
             RestApiId: !Ref PostRestApi
 
@@ -103,7 +101,6 @@ Resources:
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts
-            # Path: ApiPath
             Method: post
 
             # Will not work when running sam local start-api

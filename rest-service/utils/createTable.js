@@ -64,7 +64,6 @@ function postTableInputs() {
         },
         "TableName": TABLE_NAME
     };
-
     return input;
 }
 

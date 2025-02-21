@@ -1,6 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
-  // PutItemCommand,
+  PutItemCommand,
   // GetItemCommand,
   // UpdateItemCommand,
   // DeleteItemCommand,
@@ -66,18 +66,36 @@ export const getPostByArthur = async (event, context) => {
 };
 
 export const createPost = async (event, context) => {
+  const postInput = JSON.parse(event.body);
 
-  const postInput = event.body;
-  // console.log(postInput);
-  console.log("ajshdjksa")
+  if (!postInput?.arthur || !postInput?.title || !postInput?.message) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Bad Request: Missing required properties" }),
+    };
+  }
+  const params = {
+    TableName: TABLE_NAME,
+    Item: {
+      "Message": {
+        "S": postInput.message
+      },
+      "Arthur": {
+        "S": postInput.arthur
+      },
+      "Title": {
+        "S": postInput.title
+      },
+    }
+  }
 
   try {
-    // const command = new ScanCommand(params)
-    // const data = await dynamoDB.send(command);
+    const command = new PutItemCommand(params)
+    const response = await dynamoDB.send(command);
 
     return {
       statusCode: 200,
-      body: JSON.stringify(data.Items), // Returns all items
+      body: JSON.stringify(response),
     };
   } catch (error) {
     return {
