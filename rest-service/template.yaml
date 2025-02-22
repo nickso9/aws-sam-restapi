@@ -65,8 +65,17 @@ Resources:
           type: object
           required:
             - id
+            - arthur
+            - title
+            - message
           properties:
               id:
+                type: string
+              arthur:
+                type: string
+              title:
+                type: string
+              message:
                 type: string
 
   GetAllPosts:

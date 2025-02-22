@@ -18,16 +18,16 @@ function postInputs() {
                 {
                     "PutRequest": {
                         "Item": {
-                            "Id": {
+                            "id": {
                                 "S": uuidv4()
                             },
-                            "Arthur": {
+                            "arthur": {
                                 "S": "bob barker"
                             },
-                            "Title": {
+                            "title": {
                                 "S": "Hello all"
                             },
-                            "Message": {
+                            "message": {
                                 "S": "this is a message"
                             }
                         }
@@ -36,16 +36,16 @@ function postInputs() {
                 {
                     "PutRequest": {
                         "Item": {
-                            "Id": {
+                            "id": {
                                 "S": uuidv4()
                             },
-                            "Arthur": {
+                            "arthur": {
                                 "S": "bob barker"
                             },
-                            "Title": {
+                            "title": {
                                 "S": "What is going on ?"
                             },
-                            "Message": {
+                            "message": {
                                 "S": "I am sitting here and standing there"
                             }
                         }
@@ -54,16 +54,16 @@ function postInputs() {
                 {
                     "PutRequest": {
                         "Item": {
-                            "Id": {
+                            "id": {
                                 "S": uuidv4()
                             },
-                            "Arthur": {
+                            "arthur": {
                                 "S": "drew carey"
                             },
-                            "Title": {
+                            "title": {
                                 "S": "Whos line is it anyway?"
                             },
-                            "Message": {
+                            "message": {
                                 "S": "Okay this is another message"
                             }
                         }

@@ -42,8 +42,8 @@ export const getPostByArthur = async (event, context) => {
 
   const params = {
     TableName: TABLE_NAME,
-    ProjectionExpression: "Arthur, Title, Message", // Select specific attributes to fetch
-    FilterExpression: "contains(Arthur, :searchName)",
+    ProjectionExpression: "arthur, title, message", // Select specific attributes to fetch
+    FilterExpression: "contains(arthur, :searchName)",
     ExpressionAttributeValues: {
       ":searchName": { "S": searchName.toLowerCase() }
     }
@@ -80,16 +80,16 @@ export const createPost = async (event, context) => {
   const params = {
     TableName: TABLE_NAME,
     Item: {
-      "Id": {
+      "id": {
         "S": id
       },
-      "Message": {
+      "message": {
         "S": postInput.message
       },
-      "Arthur": {
+      "arthur": {
         "S": postInput.arthur
       },
-      "Title": {
+      "title": {
         "S": postInput.title
       },
     }
@@ -123,9 +123,9 @@ export const editPost = async (event, context) => {
   // console.log(postInput);
   const input = {
     "ExpressionAttributeNames": {
-      "#T": "Title",
-      "#M": "Message",
-      "#A": "Arthur"
+      "#T": "title",
+      "#M": "message",
+      "#A": "arthur"
     },
     "ExpressionAttributeValues": {
       ":t": {
@@ -139,12 +139,12 @@ export const editPost = async (event, context) => {
       }
     },
     "Key": {
-      "Id": { "S": postInput.id }
+      "id": { "S": postInput.id }
     },
     "ReturnValues": "ALL_NEW",
     "TableName": TABLE_NAME,
-    "UpdateExpression": "SET #T = :t, #M = :m, #A = :a"
-    // "UpdateExpression": "SET #T = if_not_exists(#T, :t), #M = if_not_exists(#M, :m), #A = if_not_exists(#A, :a)",
+    "UpdateExpression": "SET #T = :t, #M = :m, #A = :a",
+    "ConditionExpression": "attribute_exists(id)"  // Prevents creating a new item
   };
   // console.log(input)
   try {
