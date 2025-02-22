@@ -2,9 +2,8 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   PutItemCommand,
   // GetItemCommand,
-  // UpdateItemCommand,
+  UpdateItemCommand,
   // DeleteItemCommand,
-  QueryCommand,
   ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from 'uuid'
@@ -44,7 +43,7 @@ export const getPostByArthur = async (event, context) => {
   const params = {
     TableName: TABLE_NAME,
     ProjectionExpression: "Arthur, Title, Message", // Select specific attributes to fetch
-    FilterExpression: "contains(Arthur, :searchName)", // Filter for names containing 'Bob'
+    FilterExpression: "contains(Arthur, :searchName)",
     ExpressionAttributeValues: {
       ":searchName": { "S": searchName.toLowerCase() }
     }
@@ -75,11 +74,14 @@ export const createPost = async (event, context) => {
       body: JSON.stringify({ message: "Bad Request: Missing required properties" }),
     };
   }
+
+  const id = uuidv4();
+
   const params = {
     TableName: TABLE_NAME,
     Item: {
       "Id": {
-        "S": uuidv4()
+        "S": id
       },
       "Message": {
         "S": postInput.message
@@ -105,6 +107,60 @@ export const createPost = async (event, context) => {
     return {
       statusCode: 500,
       body: JSON.stringify({ message: error.message }),
+    };
+  }
+};
+
+export const editPost = async (event, context) => {
+  const postInput = JSON.parse(event.body);
+
+  if (!postInput?.id || !postInput?.arthur || !postInput?.title || !postInput?.message) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Bad Request: Missing required properties" }),
+    };
+  }
+  // console.log(postInput);
+  const input = {
+    "ExpressionAttributeNames": {
+      "#T": "Title",
+      "#M": "Message",
+      "#A": "Arthur"
+    },
+    "ExpressionAttributeValues": {
+      ":t": {
+        "S": postInput.title
+      },
+      ":m": {
+        "S": postInput.message
+      },
+      ":a": {
+        "S": postInput.arthur
+      }
+    },
+    "Key": {
+      "Id": { "S": postInput.id }
+    },
+    "ReturnValues": "ALL_NEW",
+    "TableName": TABLE_NAME,
+    "UpdateExpression": "SET #T = :t, #M = :m, #A = :a"
+    // "UpdateExpression": "SET #T = if_not_exists(#T, :t), #M = if_not_exists(#M, :m), #A = if_not_exists(#A, :a)",
+  };
+  // console.log(input)
+  try {
+    const command = new UpdateItemCommand(input);
+    // console.log(command);
+    const response = await dynamoDB.send(command);
+    // console.log(response)
+    return {
+      statusCode: 200,
+      body: JSON.stringify(response),
+    };
+  } catch (error) {
+    console.log(error)
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: error }),
     };
   }
 };

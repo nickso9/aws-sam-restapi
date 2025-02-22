@@ -42,20 +42,12 @@ function postTableInputs() {
             {
                 "AttributeName": "Id",
                 "AttributeType": "S"
-            },
-            {
-                "AttributeName": "Title",
-                "AttributeType": "S"
             }
         ],
         "KeySchema": [
             {
                 "AttributeName": "Id",
                 "KeyType": "HASH"
-            },
-            {
-                "AttributeName": "Title",
-                "KeyType": "RANGE"
             }
         ],
         "ProvisionedThroughput": {
