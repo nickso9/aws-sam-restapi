@@ -40,7 +40,7 @@ function postTableInputs() {
     const input = {
         "AttributeDefinitions": [
             {
-                "AttributeName": "Arthur",
+                "AttributeName": "Id",
                 "AttributeType": "S"
             },
             {
@@ -50,7 +50,7 @@ function postTableInputs() {
         ],
         "KeySchema": [
             {
-                "AttributeName": "Arthur",
+                "AttributeName": "Id",
                 "KeyType": "HASH"
             },
             {

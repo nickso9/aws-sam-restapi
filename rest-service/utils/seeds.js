@@ -1,8 +1,10 @@
 import { DynamoDBClient, BatchWriteItemCommand } from "@aws-sdk/client-dynamodb";
+import { v4 as uuidv4 } from 'uuid'
 
 const DYNAMODB_URI = "http://localhost:8000";
 const TABLE_NAME = "posts"
 const dynamoDB = new DynamoDBClient({ endpoint: DYNAMODB_URI });
+
 
 async function init() {
     const command = new BatchWriteItemCommand(postInputs());
@@ -16,6 +18,9 @@ function postInputs() {
                 {
                     "PutRequest": {
                         "Item": {
+                            "Id": {
+                                "S": uuidv4()
+                            },
                             "Arthur": {
                                 "S": "bob barker"
                             },
@@ -31,6 +36,9 @@ function postInputs() {
                 {
                     "PutRequest": {
                         "Item": {
+                            "Id": {
+                                "S": uuidv4()
+                            },
                             "Arthur": {
                                 "S": "bob barker"
                             },
@@ -46,6 +54,9 @@ function postInputs() {
                 {
                     "PutRequest": {
                         "Item": {
+                            "Id": {
+                                "S": uuidv4()
+                            },
                             "Arthur": {
                                 "S": "drew carey"
                             },

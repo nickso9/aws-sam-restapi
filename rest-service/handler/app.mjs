@@ -7,6 +7,7 @@ import {
   QueryCommand,
   ScanCommand,
 } from "@aws-sdk/client-dynamodb";
+import { v4 as uuidv4 } from 'uuid'
 
 const dynamoDB = new DynamoDBClient({
   endpoint: process.env.DYNAMODB_URI
@@ -77,6 +78,9 @@ export const createPost = async (event, context) => {
   const params = {
     TableName: TABLE_NAME,
     Item: {
+      "Id": {
+        "S": uuidv4()
+      },
       "Message": {
         "S": postInput.message
       },
