@@ -78,6 +78,19 @@ Resources:
               message:
                 type: string
 
+  DeleteRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Dev
+      Models:
+        postModelDeleteRequest:
+          type: object
+          required:
+            - id
+          properties:
+              id:
+                type: string
+
   GetAllPosts:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -149,6 +162,27 @@ Resources:
             # Will not work when running sam local start-api
             RequestModel:
               Model: postModelEditRequest
+              Required: true
+              ValidateBody: true
+
+  DeletePost:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Handler: app.deletePost
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: TABLE_NAME
+      Events:
+        DeletePostEvent:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref DeleteRestApi
+            Path: /posts/{id}
+            Method: delete
+
+            # Will not work when running sam local start-api
+            RequestModel:
+              Model: postModelDeleteRequest
               Required: true
               ValidateBody: true
 
