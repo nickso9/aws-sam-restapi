@@ -112,8 +112,9 @@ export const createPost = async (event, context) => {
 
 export const editPost = async (event, context) => {
   const postInput = JSON.parse(event.body);
+  const postId = event.pathParameters?.id;
 
-  if (!postInput?.id || !postInput?.arthur || !postInput?.title || !postInput?.message) {
+  if (!postId || !postInput?.arthur || !postInput?.title || !postInput?.message) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Bad Request: Missing required properties" }),
@@ -138,7 +139,7 @@ export const editPost = async (event, context) => {
       }
     },
     "Key": {
-      "id": { "S": postInput.id }
+      "id": { "S": postId }
     },
     "ReturnValues": "ALL_NEW",
     "TableName": TABLE_NAME,

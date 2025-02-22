@@ -42,7 +42,7 @@ Resources:
     Properties:
       StageName: Dev
       Models:
-        postModelCreateRequest:
+        postModelPostPutRequest:
           type: object
           required:
             - arthur
@@ -54,41 +54,6 @@ Resources:
               title:
                 type: string
               message:
-                type: string
-
-  PutRestApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: Dev
-      Models:
-        postModelEditRequest:
-          type: object
-          required:
-            - id
-            - arthur
-            - title
-            - message
-          properties:
-              id:
-                type: string
-              arthur:
-                type: string
-              title:
-                type: string
-              message:
-                type: string
-
-  DeleteRestApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: Dev
-      Models:
-        postModelDeleteRequest:
-          type: object
-          required:
-            - id
-          properties:
-              id:
                 type: string
 
   GetAllPosts:
@@ -140,7 +105,7 @@ Resources:
 
             # Will not work when running sam local start-api
             RequestModel:
-              Model: postModelCreateRequest
+              Model: postModelPostPutRequest
               Required: true
               ValidateBody: true
 
@@ -152,16 +117,16 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: TABLE_NAME
       Events:
-        CreatePostEvent:
+        EditPostEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            RestApiId: !Ref PutRestApi
-            Path: /posts
+            RestApiId: !Ref PostRestApi
+            Path: /posts/{id}
             Method: put
 
             # Will not work when running sam local start-api
             RequestModel:
-              Model: postModelEditRequest
+              Model: postModelPostPutRequest
               Required: true
               ValidateBody: true
 
@@ -176,7 +141,7 @@ Resources:
         DeletePostEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            RestApiId: !Ref DeleteRestApi
+            RestApiId: !Ref PostRestApi
             Path: /posts/{id}
             Method: delete
 
@@ -203,8 +168,8 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   GetAllPosts:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Description: "API Gateway endpoint URL for the GetAllPosts function"
+    Value: !Sub "https://${PostRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/posts"
   # HelloWorldFunction:
   #   Description: "Hello World Lambda Function ARN"
   #   Value: !GetAtt HelloWorldFunction.Arn
