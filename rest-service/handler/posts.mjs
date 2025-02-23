@@ -1,6 +1,7 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   PutItemCommand,
+  GetItemCommand,
   UpdateItemCommand,
   DeleteItemCommand,
   ScanCommand,
@@ -33,27 +34,35 @@ export const getAllPosts = async (event, context) => {
   }
 };
 
+export const getPostById = async (event, context) => {
 
-export const getPostByArthur = async (event, context) => {
+  const postId = event.pathParameters?.id;
 
-  const searchName = event.pathParameters.arthur;
-
-  const params = {
-    TableName: TABLE_NAME,
-    ProjectionExpression: "arthur, title, message", // Select specific attributes to fetch
-    FilterExpression: "contains(arthur, :searchName)",
-    ExpressionAttributeValues: {
-      ":searchName": { "S": searchName.toLowerCase() }
-    }
-  };
+  if (!postId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Bad Request: Missing required properties" }),
+    };
+  }
 
   try {
-    const command = new ScanCommand(params)
-    const data = await dynamoDB.send(command);
+    const params = {
+      TableName: TABLE_NAME,
+      "Key": {
+        "id": {
+          "S": postId
+        }
+      }
+    };
 
+    console.log(params)
+
+    const command = new GetItemCommand(params);
+    const response = await dynamoDB.send(command);
+    console.log(response);
     return {
       statusCode: 200,
-      body: JSON.stringify(data.Items), // Returns all items
+      body: JSON.stringify(response.Item), // Returns all items
     };
   } catch (error) {
     return {
@@ -98,7 +107,7 @@ export const createPost = async (event, context) => {
     const response = await dynamoDB.send(command);
 
     return {
-      statusCode: 200,
+      statusCode: 201,
       body: JSON.stringify(response),
     };
   } catch (error) {
@@ -152,7 +161,7 @@ export const editPost = async (event, context) => {
     const response = await dynamoDB.send(command);
     // console.log(response)
     return {
-      statusCode: 200,
+      statusCode: 204,
       body: JSON.stringify(response),
     };
   } catch (error) {
