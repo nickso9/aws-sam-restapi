@@ -6,9 +6,12 @@ Description: >
   SAM Template for rest-service
 
 Parameters:
-  TableName:
+  TableNamePosts:
     Type: String
     Default: "posts"
+  TableNameArthurs:
+    Type: String
+    Default: "arthurs"
   Region:
     Type: String
     Default: "us-east-2"
@@ -26,7 +29,8 @@ Globals:
         - x86_64
     Environment:
       Variables:
-        TABLE_NAME: !Ref TableName
+        TABLE_NAME_POSTS: !Ref TableNamePosts
+        TABLE_NAME_ARTHURS: !Ref TableNameArthurs
         DYNAMODB_URI: !Ref DYNAMODBURI
         REGION_NAME: !Ref Region
 
@@ -57,7 +61,7 @@ Resources:
       Handler: posts.getAllPosts
       Policies:
         - DynamoDBReadPolicy:
-            TableName: TABLE_NAME
+            TableName: TABLE_NAME_POSTS
       Events:
         GetAllPostsEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -72,7 +76,7 @@ Resources:
       Handler: posts.getPostById
       Policies:
         - DynamoDBReadPolicy:
-            TableName: TABLE_NAME
+            TableName: TABLE_NAME_POSTS
       Events:
         GetPostByIdEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -91,7 +95,7 @@ Resources:
       Handler: arthurs.getPostByArthur
       Policies:
         - DynamoDBReadPolicy:
-            TableName: TABLE_NAME
+            TableName: TABLE_NAME_POSTS
       Events:
         GetPostByArthurEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -100,9 +104,9 @@ Resources:
             Method: get
             RestApiId: !Ref PostRestApi
 
-            RequestParameter:
-              - method.request.path.arthur:
-                Required: true
+            # RequestParameter:
+            #   - method.request.path.arthur:
+            #     Required: true
 
   CreatePost:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -110,7 +114,7 @@ Resources:
       Handler: posts.createPost
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: TABLE_NAME
+            TableName: TABLE_NAME_POSTS
       Events:
         CreatePostEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -131,7 +135,7 @@ Resources:
       Handler: posts.editPost
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: TABLE_NAME
+            TableName: TABLE_NAME_POSTS
       Events:
         EditPostEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -156,7 +160,7 @@ Resources:
       Handler: posts.deletePost
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: TABLE_NAME
+            TableName: TABLE_NAME_POSTS
       Events:
         DeletePostEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -172,7 +176,21 @@ Resources:
   PostTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: TABLE_NAME
+      TableName: TABLE_NAME_POSTS
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:  
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  ArthurTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: TABLE_NAME_ARTHURS
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
@@ -190,9 +208,4 @@ Outputs:
   GetAllPosts:
     Description: "API Gateway endpoint URL for the GetAllPosts function"
     Value: !Sub "https://${PostRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/posts"
-  # HelloWorldFunction:
-  #   Description: "Hello World Lambda Function ARN"
-  #   Value: !GetAtt HelloWorldFunction.Arn
-  # HelloWorldFunctionIamRole:
-  #   Description: "Implicit IAM Role created for Hello World function"
-  #   Value: !GetAtt HelloWorldFunctionRole.Arn
+

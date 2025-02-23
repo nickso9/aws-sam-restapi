@@ -15,8 +15,8 @@ const dynamoDB = new DynamoDBClient({
 const TABLE_NAME = process.env.TABLE_NAME;
 
 export const getPostByArthur = async (event, context) => {
-
-  const searchName = event.pathParameters.arthur;
+    console.log('asdasdjjj')
+  const searchName = event.pathParameters?.arthur;
 
 //   const params = {
 //     TableName: TABLE_NAME,

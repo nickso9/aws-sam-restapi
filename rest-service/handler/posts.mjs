@@ -12,12 +12,12 @@ const dynamoDB = new DynamoDBClient({
   endpoint: process.env.DYNAMODB_URI
 });
 
-const TABLE_NAME = process.env.TABLE_NAME;
+const TABLE_NAME_POSTS = process.env.TABLE_NAME_POSTS;
 
 export const getAllPosts = async (event, context) => {
   try {
     const params = {
-      TableName: TABLE_NAME,
+      TableName: TABLE_NAME_POSTS,
     };
 
     const data = await dynamoDB.send(new ScanCommand(params));
@@ -47,7 +47,7 @@ export const getPostById = async (event, context) => {
 
   try {
     const params = {
-      TableName: TABLE_NAME,
+      TableName: TABLE_NAME_POSTS,
       "Key": {
         "id": {
           "S": postId
@@ -55,11 +55,8 @@ export const getPostById = async (event, context) => {
       }
     };
 
-    console.log(params)
-
     const command = new GetItemCommand(params);
     const response = await dynamoDB.send(command);
-    console.log(response);
     return {
       statusCode: 200,
       body: JSON.stringify(response.Item), // Returns all items
@@ -85,7 +82,7 @@ export const createPost = async (event, context) => {
   const id = uuidv4();
 
   const params = {
-    TableName: TABLE_NAME,
+    TableName: TABLE_NAME_POSTS,
     Item: {
       "id": {
         "S": id
@@ -122,7 +119,7 @@ export const editPost = async (event, context) => {
   const postInput = JSON.parse(event.body);
   const postId = event.pathParameters?.id;
 
-  if (!postId || !postInput?.arthur || !postInput?.title || !postInput?.message) {
+  if (!postId || !postInput?.title || !postInput?.message) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Bad Request: Missing required properties" }),
@@ -132,8 +129,7 @@ export const editPost = async (event, context) => {
   const input = {
     "ExpressionAttributeNames": {
       "#T": "title",
-      "#M": "message",
-      "#A": "arthur"
+      "#M": "message"
     },
     "ExpressionAttributeValues": {
       ":t": {
@@ -141,17 +137,14 @@ export const editPost = async (event, context) => {
       },
       ":m": {
         "S": postInput.message
-      },
-      ":a": {
-        "S": postInput.arthur
       }
     },
     "Key": {
       "id": { "S": postId }
     },
     "ReturnValues": "ALL_NEW",
-    "TableName": TABLE_NAME,
-    "UpdateExpression": "SET #T = :t, #M = :m, #A = :a",
+    "TableName": TABLE_NAME_POSTS,
+    "UpdateExpression": "SET #T = :t, #M = :m",
     "ConditionExpression": "attribute_exists(id)"  // Prevents creating a new item
   };
   // console.log(input)
@@ -165,7 +158,7 @@ export const editPost = async (event, context) => {
       body: JSON.stringify(response),
     };
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     return {
       statusCode: 500,
       body: JSON.stringify({ message: error }),
@@ -190,7 +183,7 @@ export const deletePost = async (event, context) => {
         "S": postId
       }
     },
-    "TableName": TABLE_NAME
+    "TableName": TABLE_NAME_POSTS
   }
 
   try {
