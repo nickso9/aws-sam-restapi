@@ -5,6 +5,8 @@ import {
   UpdateItemCommand,
   DeleteItemCommand,
   ScanCommand,
+  // QueryCommand,
+  BatchGetItemCommand
 } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from 'uuid'
 
@@ -13,18 +15,72 @@ const dynamoDB = new DynamoDBClient({
 });
 
 const TABLE_NAME_POSTS = process.env.TABLE_NAME_POSTS;
+const TABLE_NAME_ARTHURS = process.env.TABLE_NAME_ARTHURS;
 
 export const getAllPosts = async (event, context) => {
+
   try {
-    const params = {
+    const postParams = {
       TableName: TABLE_NAME_POSTS,
+      Limit: 100
     };
 
-    const data = await dynamoDB.send(new ScanCommand(params));
+    const scanCommand = new ScanCommand(postParams);
+    const postData = await dynamoDB.send(scanCommand);
+
+    if (!postData.Items.length) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify([]),
+      };
+    }
+
+    let postArthursId = new Set();
+
+    for (let i = 0; i < postData.Items.length; i++) {
+      const post = postData.Items[i];
+      postArthursId.add(post.arthur.S);
+    }
+
+    const arthurParams = {
+      RequestItems: {
+        [TABLE_NAME_ARTHURS]: {
+          Keys: [],
+          AttributesToGet: [
+            'id', 'name'
+          ]
+        }
+      }
+    }
+
+    const keys = arthurParams.RequestItems[TABLE_NAME_ARTHURS].Keys;
+    for (const id of postArthursId) {
+        keys.push({
+          id: {
+           "S": id
+          }
+        })
+    }
+
+    const queryCommand = new BatchGetItemCommand(arthurParams);
+    const arthurData = await dynamoDB.send(queryCommand);
+    
+    const arthurs = arthurData.Responses.arthurs;
+    const arthurMap = {};
+
+    for (let i = 0; i < arthurs.length; i++) {
+      const arthur = arthurs[i];
+      arthurMap[arthur["id"]["S"]] = arthur["name"]["S"];
+    }
+
+    for (let i = 0; i < postData.Items.length; i++) {
+      const post = postData.Items[i];
+      post.arthur.S = arthurMap[post.arthur.S];
+    }
 
     return {
       statusCode: 200,
-      body: JSON.stringify(data.Items), // Returns all items
+      body: JSON.stringify(postData.Items),
     };
   } catch (error) {
     return {

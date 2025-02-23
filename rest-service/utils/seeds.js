@@ -17,10 +17,6 @@ async function init() {
     }
 }
 
-// function arthurInputs() {
-
-// }
-
 function tableInputs() {
     const input = {
         "RequestItems": {
