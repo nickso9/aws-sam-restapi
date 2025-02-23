@@ -14,7 +14,6 @@ const dynamoDB = new DynamoDBClient({
 const TABLE_NAME = process.env.TABLE_NAME;
 
 export const getAllPosts = async (event, context) => {
-
   try {
     const params = {
       TableName: TABLE_NAME,

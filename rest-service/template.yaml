@@ -3,19 +3,18 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   rest-service
 
-  Sample SAM Template for rest-service
+  SAM Template for rest-service
 
 Parameters:
-  ApiPath:
-    Type: String
-    Default: /posts
   TableName:
     Type: String
-    Default: posts
+    Default: "posts"
   Region:
     Type: String
-    Default: us-east-2
-  
+    Default: "us-east-2"
+  DYNAMODBURI:
+    Type: String
+    Default: "https://dynamodb.us-east-2.amazonaws.com"
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -28,13 +27,9 @@ Globals:
     Environment:
       Variables:
         TABLE_NAME: !Ref TableName
-        DYNAMODB_URI: http://host.docker.internal:8000
-        # DYNAMODB_URI: http://localhost:8000
-        # DYNAMODB_URI: http://ddb-local:8000
+        DYNAMODB_URI: !Ref DYNAMODBURI
         REGION_NAME: !Ref Region
-    #     API_PATH: /posts
 
-      
 Resources:
 
   PostRestApi:
@@ -69,7 +64,6 @@ Resources:
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts
-            # Path: ApiPath
             Method: get
             
 
@@ -87,6 +81,10 @@ Resources:
             Path: /posts/{arthur}
             Method: get
             RestApiId: !Ref PostRestApi
+
+            RequestParameter:
+              - method.request.path.arthur:
+                Required: true
 
   CreatePost:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -130,6 +128,10 @@ Resources:
               Required: true
               ValidateBody: true
 
+            RequestParameter:
+              - method.request.path.id:
+                Required: true
+
   DeletePost:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -145,12 +147,9 @@ Resources:
             Path: /posts/{id}
             Method: delete
 
-            # Will not work when running sam local start-api
-            RequestModel:
-              Model: postModelDeleteRequest
-              Required: true
-              ValidateBody: true
-
+            RequestParameter:
+              - method.request.path.id:
+                Required: true
 
   PostTable:
     Type: AWS::DynamoDB::Table
@@ -162,6 +161,9 @@ Resources:
     KeySchema:
       - AttributeName: id
         KeyType: HASH
+    ProvisionedThroughput:  
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
