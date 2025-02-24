@@ -89,15 +89,15 @@ Resources:
             #   - method.request.path.arthur:
             #     Required: true
 
-  GetPostByArthur:
+  GetPostsByArthur:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Handler: arthurs.getPostByArthur
+      Handler: arthurs/index.getPostsByArthur
       Policies:
         - DynamoDBReadPolicy:
             TableName: TABLE_NAME_POSTS
       Events:
-        GetPostByArthurEvent:
+        GetPostsByArthurEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /arthurs/{arthur}
