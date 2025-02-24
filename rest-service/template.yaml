@@ -58,7 +58,7 @@ Resources:
   GetAllPosts:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Handler: posts.getAllPosts
+      Handler: posts/index.getAllPosts
       Policies:
         - DynamoDBReadPolicy:
             TableName: TABLE_NAME_POSTS
@@ -73,7 +73,7 @@ Resources:
   GetPostById:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Handler: posts.getPostById
+      Handler: posts/index.getPostById
       Policies:
         - DynamoDBReadPolicy:
             TableName: TABLE_NAME_POSTS
@@ -111,7 +111,7 @@ Resources:
   CreatePost:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Handler: posts.createPost
+      Handler: posts/index.createPost
       Policies:
         - DynamoDBCrudPolicy:
             TableName: TABLE_NAME_POSTS
@@ -132,7 +132,7 @@ Resources:
   EditPost:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Handler: posts.editPost
+      Handler: posts/index.editPost
       Policies:
         - DynamoDBCrudPolicy:
             TableName: TABLE_NAME_POSTS
@@ -157,7 +157,7 @@ Resources:
   DeletePost:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Handler: posts.deletePost
+      Handler: posts/index.deletePost
       Policies:
         - DynamoDBCrudPolicy:
             TableName: TABLE_NAME_POSTS
