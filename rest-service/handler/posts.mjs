@@ -5,7 +5,6 @@ import {
   UpdateItemCommand,
   DeleteItemCommand,
   ScanCommand,
-  // QueryCommand,
   BatchGetItemCommand
 } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from 'uuid'
@@ -55,16 +54,16 @@ export const getAllPosts = async (event, context) => {
 
     const keys = arthurParams.RequestItems[TABLE_NAME_ARTHURS].Keys;
     for (const id of postArthursId) {
-        keys.push({
-          id: {
-           "S": id
-          }
-        })
+      keys.push({
+        id: {
+          "S": id
+        }
+      })
     }
 
     const queryCommand = new BatchGetItemCommand(arthurParams);
     const arthurData = await dynamoDB.send(queryCommand);
-    
+
     const arthurs = arthurData.Responses.arthurs;
     const arthurMap = {};
 
@@ -75,7 +74,7 @@ export const getAllPosts = async (event, context) => {
 
     for (let i = 0; i < postData.Items.length; i++) {
       const post = postData.Items[i];
-      post.arthur.S = arthurMap[post.arthur.S];
+      post.arthur.S = arthurMap[post.arthur.S] || "Arthur not available.";
     }
 
     return {
@@ -102,7 +101,7 @@ export const getPostById = async (event, context) => {
   }
 
   try {
-    const params = {
+    const postParams = {
       TableName: TABLE_NAME_POSTS,
       "Key": {
         "id": {
@@ -111,11 +110,33 @@ export const getPostById = async (event, context) => {
       }
     };
 
-    const command = new GetItemCommand(params);
-    const response = await dynamoDB.send(command);
+    const postCommand = new GetItemCommand(postParams);
+    const postData = await dynamoDB.send(postCommand);
+    
+    if (!postData.Item?.id) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify([]), 
+      };
+    }
+
+    const arthurParams = {
+      TableName: TABLE_NAME_ARTHURS,
+      "Key": {
+        "id": {
+          "S": postData.Item.arthur.S
+        }
+      }
+    };
+
+    const arthurCommand = new GetItemCommand(arthurParams);
+    const arthurData = await dynamoDB.send(arthurCommand);
+
+    postData.Item.arthur.S = arthurData.Item?.name?.S || "Arthur not available.";
+
     return {
       statusCode: 200,
-      body: JSON.stringify(response.Item), // Returns all items
+      body: JSON.stringify(postData.Item), // Returns all items
     };
   } catch (error) {
     return {
@@ -203,18 +224,17 @@ export const editPost = async (event, context) => {
     "UpdateExpression": "SET #T = :t, #M = :m",
     "ConditionExpression": "attribute_exists(id)"  // Prevents creating a new item
   };
-  // console.log(input)
+ 
   try {
     const command = new UpdateItemCommand(input);
-    // console.log(command);
     const response = await dynamoDB.send(command);
-    // console.log(response)
+
     return {
       statusCode: 204,
       body: JSON.stringify(response),
     };
   } catch (error) {
-    // console.log(error)
+
     return {
       statusCode: 500,
       body: JSON.stringify({ message: error }),
