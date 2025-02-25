@@ -1,62 +1,41 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
-  GetItemCommand
+    ScanCommand
 } from "@aws-sdk/client-dynamodb";
 
 
 const dynamoDB = new DynamoDBClient({
-  endpoint: process.env.DYNAMODB_URI
+    endpoint: process.env.DYNAMODB_URI
 });
 
 const TABLE_NAME_POSTS = process.env.TABLE_NAME_POSTS;
 const TABLE_NAME_ARTHURS = process.env.TABLE_NAME_ARTHURS;
 
-export const getPostById = async (event, context) => {
+export const getPostsByArthur = async (event, context) => {
 
-  const postId = event.pathParameters?.id;
-
-  try {
-    const postParams = {
-      TableName: TABLE_NAME_POSTS,
-      "Key": {
-        "id": {
-          "S": postId
-        }
-      }
-    };
-
-    const postCommand = new GetItemCommand(postParams);
-    const postData = await dynamoDB.send(postCommand);
+    const arthurId = event.pathParameters?.id;
     
-    if (!postData.Item?.id) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify([]), 
-      };
+    try {
+        const postParams = {
+            TableName: TABLE_NAME_POSTS,
+            FilterExpression: "arthurId = :a",
+            ExpressionAttributeValues: {
+                ":a": { "S": arthurId }
+            },
+            ProjectionExpression: "id, title, message, arthurId"
+        };
+ 
+        const postCommand = new ScanCommand(postParams);
+        const postData = await dynamoDB.send(postCommand);
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify(postData.Items),
+        };
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: error.message }),
+        };
     }
-
-    const arthurParams = {
-      TableName: TABLE_NAME_ARTHURS,
-      "Key": {
-        "id": {
-          "S": postData.Item.arthur.S
-        }
-      }
-    };
-
-    const arthurCommand = new GetItemCommand(arthurParams);
-    const arthurData = await dynamoDB.send(arthurCommand);
-
-    postData.Item.arthur.S = arthurData.Item?.name?.S || "Arthur not available.";
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify(postData.Item), 
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: error.message }),
-    };
-  }
 };

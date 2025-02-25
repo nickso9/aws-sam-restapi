@@ -11,7 +11,7 @@ const dynamoDB = new DynamoDBClient({
 const TABLE_NAME_ARTHURS = process.env.TABLE_NAME_ARTHURS;
 
 export const getArthurById = async (event, context) => {
-
+    console.log('sfsdf')
     const arthurId = event.pathParameters?.id;
 
     try {
