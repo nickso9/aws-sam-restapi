@@ -13,7 +13,7 @@ const TABLE_NAME_POSTS = process.env.TABLE_NAME_POSTS;
 export const createPost = async (event, context) => {
   const postInput = JSON.parse(event.body);
 
-  if (!postInput?.arthur || !postInput?.title || !postInput?.message) {
+  if (!postInput?.arthurId || !postInput?.title || !postInput?.message) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Bad Request: Missing required properties" }),
@@ -31,8 +31,8 @@ export const createPost = async (event, context) => {
       "message": {
         "S": postInput.message
       },
-      "arthur": {
-        "S": postInput.arthur
+      "arthurId": {
+        "S": postInput.arthurId
       },
       "title": {
         "S": postInput.title

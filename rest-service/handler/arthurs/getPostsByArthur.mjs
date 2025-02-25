@@ -1,44 +1,62 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
-  PutItemCommand,
-  GetItemCommand,
-  UpdateItemCommand,
-  DeleteItemCommand,
-  ScanCommand,
+  GetItemCommand
 } from "@aws-sdk/client-dynamodb";
-import { v4 as uuidv4 } from 'uuid'
+
 
 const dynamoDB = new DynamoDBClient({
   endpoint: process.env.DYNAMODB_URI
 });
 
-const TABLE_NAME = process.env.TABLE_NAME;
+const TABLE_NAME_POSTS = process.env.TABLE_NAME_POSTS;
+const TABLE_NAME_ARTHURS = process.env.TABLE_NAME_ARTHURS;
 
-export const getPostsByArthur = async (event, context) => {
-    console.log('asdasdjjj')
-  const searchName = event.pathParameters?.arthur;
+export const getPostById = async (event, context) => {
 
-//   const params = {
-//     TableName: TABLE_NAME,
-//     ProjectionExpression: "arthur, title, message", // Select specific attributes to fetch
-//     FilterExpression: "contains(arthur, :searchName)",
-//     ExpressionAttributeValues: {
-//       ":searchName": { "S": searchName.toLowerCase() }
-//     }
-//   };
+  const postId = event.pathParameters?.id;
 
-//   try {
-//     const command = new ScanCommand(params)
-//     const data = await dynamoDB.send(command);
+  try {
+    const postParams = {
+      TableName: TABLE_NAME_POSTS,
+      "Key": {
+        "id": {
+          "S": postId
+        }
+      }
+    };
 
-//     return {
-//       statusCode: 200,
-//       body: JSON.stringify(data.Items), // Returns all items
-//     };
-//   } catch (error) {
-//     return {
-//       statusCode: 500,
-//       body: JSON.stringify({ message: error.message }),
-//     };
-//   }
+    const postCommand = new GetItemCommand(postParams);
+    const postData = await dynamoDB.send(postCommand);
+    
+    if (!postData.Item?.id) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify([]), 
+      };
+    }
+
+    const arthurParams = {
+      TableName: TABLE_NAME_ARTHURS,
+      "Key": {
+        "id": {
+          "S": postData.Item.arthur.S
+        }
+      }
+    };
+
+    const arthurCommand = new GetItemCommand(arthurParams);
+    const arthurData = await dynamoDB.send(arthurCommand);
+
+    postData.Item.arthur.S = arthurData.Item?.name?.S || "Arthur not available.";
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(postData.Item), 
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: error.message }),
+    };
+  }
 };

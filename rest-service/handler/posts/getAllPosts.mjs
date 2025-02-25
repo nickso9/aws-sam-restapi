@@ -33,7 +33,7 @@ export const getAllPosts = async (event, context) => {
 
     for (let i = 0; i < postData.Items.length; i++) {
       const post = postData.Items[i];
-      postArthursId.add(post.arthur.S);
+      postArthursId.add(post.arthurId.S);
     }
 
     const arthurParams = {
@@ -69,7 +69,8 @@ export const getAllPosts = async (event, context) => {
 
     for (let i = 0; i < postData.Items.length; i++) {
       const post = postData.Items[i];
-      post.arthur.S = arthurMap[post.arthur.S] || "Arthur not available.";
+      post.arthurName = {} 
+      post.arthurName.S = arthurMap[post.arthurId.S] || "Arthur not available.";
     }
 
     return {

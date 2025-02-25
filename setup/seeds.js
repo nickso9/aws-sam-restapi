@@ -27,7 +27,7 @@ function tableInputs() {
                             "id": {
                                 "S": uuidv4()
                             },
-                            "arthur": {
+                            "arthurId": {
                                 "S": arthurIds[Math.floor(Math.random() * arthurIds.length)]
                             },
                             "title": {
@@ -45,7 +45,7 @@ function tableInputs() {
                             "id": {
                                 "S": uuidv4()
                             },
-                            "arthur": {
+                            "arthurId": {
                                 "S": arthurIds[Math.floor(Math.random() * arthurIds.length)]
                             },
                             "title": {
@@ -63,7 +63,7 @@ function tableInputs() {
                             "id": {
                                 "S": uuidv4()
                             },
-                            "arthur": {
+                            "arthurId": {
                                 "S": arthurIds[Math.floor(Math.random() * arthurIds.length)]
                             },
                             "title": {
@@ -80,7 +80,7 @@ function tableInputs() {
                             "id": {
                                 "S": uuidv4()
                             },
-                            "arthur": {
+                            "arthurId": {
                                 "S": arthurIds[Math.floor(Math.random() * arthurIds.length)]
                             },
                             "title": {

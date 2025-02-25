@@ -15,13 +15,6 @@ export const getPostById = async (event, context) => {
 
   const postId = event.pathParameters?.id;
 
-  if (!postId) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "Bad Request: Missing required properties" }),
-    };
-  }
-
   try {
     const postParams = {
       TableName: TABLE_NAME_POSTS,
@@ -46,7 +39,7 @@ export const getPostById = async (event, context) => {
       TableName: TABLE_NAME_ARTHURS,
       "Key": {
         "id": {
-          "S": postData.Item.arthur.S
+          "S": postData.Item.arthurId.S
         }
       }
     };
@@ -54,7 +47,8 @@ export const getPostById = async (event, context) => {
     const arthurCommand = new GetItemCommand(arthurParams);
     const arthurData = await dynamoDB.send(arthurCommand);
 
-    postData.Item.arthur.S = arthurData.Item?.name?.S || "Arthur not available.";
+    postData.Item.arthurName = {}
+    postData.Item.arthurName.S = arthurData.Item?.name?.S || "Arthur not available.";
 
     return {
       statusCode: 200,
