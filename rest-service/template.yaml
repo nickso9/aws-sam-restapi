@@ -95,12 +95,31 @@ Resources:
       Handler: arthurs/index.getPostsByArthur
       Policies:
         - DynamoDBReadPolicy:
-            TableName: TABLE_NAME_POSTS
+            TableName: TABLE_NAME_ARTHURS
       Events:
         GetPostsByArthurEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /arthurs/{arthur}
+            Path: /arthurs/{arthurId}/posts
+            Method: get
+            RestApiId: !Ref PostRestApi
+
+            # RequestParameter:
+            #   - method.request.path.arthur:
+            #     Required: true
+
+  GetArthurs:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Handler: arthurs/index.getArthurs
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: TABLE_NAME_ARTHURS
+      Events:
+        GetArthursEvent:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /arthurs
             Method: get
             RestApiId: !Ref PostRestApi
 
