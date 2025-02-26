@@ -44,11 +44,11 @@ Resources:
         postModelPostPutRequest:
           type: object
           required:
-            - arthur
+            - arthurId
             - title
             - message
           properties:
-              arthur:
+              arthurId:
                 type: string
               title:
                 type: string
