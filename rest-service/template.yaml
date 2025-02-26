@@ -1,23 +1,22 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
+Description: |
   rest-service
-
   SAM Template for rest-service
 
 Parameters:
   TableNamePosts:
     Type: String
-    Default: "posts"
+    Default: posts
   TableNameArthurs:
     Type: String
-    Default: "arthurs"
+    Default: arthurs
   Region:
     Type: String
-    Default: "us-east-2"
+    Default: us-east-2
   DYNAMODBURI:
     Type: String
-    Default: "https://dynamodb.us-east-2.amazonaws.com"
+    Default: https://dynamodb.us-east-2.amazonaws.com
 
 Globals:
   Function:
@@ -26,7 +25,7 @@ Globals:
     CodeUri: handler/
     Runtime: nodejs20.x
     Architectures:
-        - x86_64
+      - x86_64
     Environment:
       Variables:
         TABLE_NAME_POSTS: !Ref TableNamePosts
@@ -48,24 +47,24 @@ Resources:
             - title
             - message
           properties:
-              arthurId:
-                type: string
-              title:
-                type: string
-              message:
-                type: string
+            arthurId:
+              type: string
+            title:
+              type: string
+            message:
+              type: string
         arthurModelPostPutRequest:
-            type: object
-            required:
-              - name
-            properties:
-                name:
-                  type: string
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
 
   # POST ROUTES #
 
   GetAllPosts:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Handler: posts/index.getAllPosts
       Policies:
@@ -75,14 +74,14 @@ Resources:
             TableName: !Ref TableNameArthurs
       Events:
         GetAllPostsEvent:
-          Type: Api 
+          Type: Api
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts
             Method: get
-            
+
   GetPostById:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Handler: posts/index.getPostById
       Policies:
@@ -92,7 +91,7 @@ Resources:
             TableName: !Ref TableNameArthurs
       Events:
         GetPostByIdEvent:
-          Type: Api 
+          Type: Api
           Properties:
             Path: /posts/{id}
             Method: get
@@ -109,7 +108,7 @@ Resources:
             TableName: !Ref TableNameArthurs
       Events:
         CreatePostEvent:
-          Type: Api 
+          Type: Api
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts
@@ -121,7 +120,7 @@ Resources:
               ValidateBody: true
 
   EditPost:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Handler: posts/index.editPost
       Policies:
@@ -129,7 +128,7 @@ Resources:
             TableName: !Ref TableNamePosts
       Events:
         EditPostEvent:
-          Type: Api 
+          Type: Api
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts/{id}
@@ -142,7 +141,7 @@ Resources:
               ValidateBody: true
 
   DeletePost:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Handler: posts/index.deletePost
       Policies:
@@ -150,16 +149,16 @@ Resources:
             TableName: !Ref TableNamePosts
       Events:
         DeletePostEvent:
-          Type: Api 
+          Type: Api
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts/{id}
             Method: delete
 
   # Arthur Routes #
-  
+
   GetPostsByArthur:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Handler: arthurs/index.getPostsByArthur
       Policies:
@@ -167,14 +166,14 @@ Resources:
             TableName: !Ref TableNamePosts
       Events:
         GetPostsByArthurEvent:
-          Type: Api 
+          Type: Api
           Properties:
             Path: /arthurs/{id}/posts
             Method: get
             RestApiId: !Ref PostRestApi
 
   GetArthurs:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Handler: arthurs/index.getArthurs
       Policies:
@@ -182,14 +181,14 @@ Resources:
             TableName: !Ref TableNameArthurs
       Events:
         GetArthursEvent:
-          Type: Api 
+          Type: Api
           Properties:
             Path: /arthurs
             Method: get
             RestApiId: !Ref PostRestApi
 
   GetArthurById:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Handler: arthurs/index.getArthurById
       Policies:
@@ -197,7 +196,7 @@ Resources:
             TableName: !Ref TableNameArthurs
       Events:
         GetArthurByIdEvent:
-          Type: Api 
+          Type: Api
           Properties:
             Path: /arthurs/{id}
             Method: get
@@ -233,7 +232,7 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-      ProvisionedThroughput:  
+      ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
 
@@ -247,7 +246,7 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-      ProvisionedThroughput:  
+      ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
 
@@ -256,6 +255,5 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   GetAllPosts:
-    Description: "API Gateway endpoint URL for the GetAllPosts function"
-    Value: !Sub "https://${PostRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/posts"
-
+    Description: API Gateway endpoint URL for the GetAllPosts function
+    Value: !Sub https://${PostRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/posts
