@@ -61,7 +61,9 @@ Resources:
       Handler: posts/index.getAllPosts
       Policies:
         - DynamoDBReadPolicy:
-            TableName: TABLE_NAME_POSTS
+            TableName: !Ref TableNamePosts
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableNameArthurs
       Events:
         GetAllPostsEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -76,7 +78,9 @@ Resources:
       Handler: posts/index.getPostById
       Policies:
         - DynamoDBReadPolicy:
-            TableName: TABLE_NAME_POSTS
+            TableName: !Ref TableNamePosts
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableNameArthurs
       Events:
         GetPostByIdEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -95,7 +99,7 @@ Resources:
       Handler: arthurs/index.getPostsByArthur
       Policies:
         - DynamoDBReadPolicy:
-            TableName: TABLE_NAME_ARTHURS
+            TableName: !Ref TableNamePosts
       Events:
         GetPostsByArthurEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -114,7 +118,7 @@ Resources:
       Handler: arthurs/index.getArthurs
       Policies:
         - DynamoDBReadPolicy:
-            TableName: TABLE_NAME_ARTHURS
+            TableName: !Ref TableNameArthurs
       Events:
         GetArthursEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -132,9 +136,9 @@ Resources:
       Handler: arthurs/index.getArthurById
       Policies:
         - DynamoDBReadPolicy:
-            TableName: TABLE_NAME_ARTHURS
+            TableName: !Ref TableNameArthurs
       Events:
-        GetArthursEvent:
+        GetArthurByIdEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /arthurs/{id}
@@ -152,7 +156,7 @@ Resources:
       Handler: posts/index.createPost
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: TABLE_NAME_POSTS
+            TableName: !Ref TableNamePosts
       Events:
         CreatePostEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -173,7 +177,7 @@ Resources:
       Handler: posts/index.editPost
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: TABLE_NAME_POSTS
+            TableName: !Ref TableNamePosts
       Events:
         EditPostEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -198,7 +202,7 @@ Resources:
       Handler: posts/index.deletePost
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: TABLE_NAME_POSTS
+            TableName: !Ref TableNamePosts
       Events:
         DeletePostEvent:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -214,7 +218,7 @@ Resources:
   PostTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: TABLE_NAME_POSTS
+      TableName: !Ref TableNamePosts
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
@@ -228,7 +232,7 @@ Resources:
   ArthurTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: TABLE_NAME_ARTHURS
+      TableName: !Ref TableNameArthurs
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S

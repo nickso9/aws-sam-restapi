@@ -9,7 +9,6 @@ const dynamoDB = new DynamoDBClient({
 });
 
 const TABLE_NAME_POSTS = process.env.TABLE_NAME_POSTS;
-const TABLE_NAME_ARTHURS = process.env.TABLE_NAME_ARTHURS;
 
 export const getPostsByArthur = async (event, context) => {
 
