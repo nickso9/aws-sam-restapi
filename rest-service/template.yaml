@@ -18,7 +18,7 @@ Parameters:
   DYNAMODBURI:
     Type: String
     Default: "https://dynamodb.us-east-2.amazonaws.com"
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
 Globals:
   Function:
     Timeout: 3
@@ -54,9 +54,18 @@ Resources:
                 type: string
               message:
                 type: string
+        arthurModelPostPutRequest:
+            type: object
+            required:
+              - name
+            properties:
+                name:
+                  type: string
+
+  # POST ROUTES #
 
   GetAllPosts:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       Handler: posts/index.getAllPosts
       Policies:
@@ -66,14 +75,14 @@ Resources:
             TableName: !Ref TableNameArthurs
       Events:
         GetAllPostsEvent:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api 
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts
             Method: get
             
   GetPostById:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       Handler: posts/index.getPostById
       Policies:
@@ -83,96 +92,36 @@ Resources:
             TableName: !Ref TableNameArthurs
       Events:
         GetPostByIdEvent:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api 
           Properties:
             Path: /posts/{id}
             Method: get
             RestApiId: !Ref PostRestApi
 
-            # RequestParameter:
-            #   - method.request.path.arthur:
-            #     Required: true
-
-  GetPostsByArthur:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Handler: arthurs/index.getPostsByArthur
-      Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableNamePosts
-      Events:
-        GetPostsByArthurEvent:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /arthurs/{id}/posts
-            Method: get
-            RestApiId: !Ref PostRestApi
-
-            # RequestParameter:
-            #   - method.request.path.arthur:
-            #     Required: true
-
-  GetArthurs:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Handler: arthurs/index.getArthurs
-      Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableNameArthurs
-      Events:
-        GetArthursEvent:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /arthurs
-            Method: get
-            RestApiId: !Ref PostRestApi
-
-            # RequestParameter:
-            #   - method.request.path.arthur:
-            #     Required: true
-  GetArthurById:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      Handler: arthurs/index.getArthurById
-      Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref TableNameArthurs
-      Events:
-        GetArthurByIdEvent:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /arthurs/{id}
-            Method: get
-            RestApiId: !Ref PostRestApi
-
-            # RequestParameter:
-            #   - method.request.path.arthur:
-            #     Required: true
-
-
   CreatePost:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       Handler: posts/index.createPost
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref TableNamePosts
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableNameArthurs
       Events:
         CreatePostEvent:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api 
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts
             Method: post
 
-            # Will not work when running sam local start-api
             RequestModel:
               Model: postModelPostPutRequest
               Required: true
               ValidateBody: true
 
   EditPost:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       Handler: posts/index.editPost
       Policies:
@@ -180,7 +129,7 @@ Resources:
             TableName: !Ref TableNamePosts
       Events:
         EditPostEvent:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api 
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts/{id}
@@ -192,12 +141,8 @@ Resources:
               Required: true
               ValidateBody: true
 
-            # RequestParameter:
-            #   - method.request.path.id:
-            #     Required: true
-
   DeletePost:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       Handler: posts/index.deletePost
       Policies:
@@ -205,15 +150,78 @@ Resources:
             TableName: !Ref TableNamePosts
       Events:
         DeletePostEvent:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api 
           Properties:
             RestApiId: !Ref PostRestApi
             Path: /posts/{id}
             Method: delete
 
-            # RequestParameter:
-            #   - method.request.path.id:
-            #     Required: true
+  # Arthur Routes #
+  
+  GetPostsByArthur:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Handler: arthurs/index.getPostsByArthur
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableNamePosts
+      Events:
+        GetPostsByArthurEvent:
+          Type: Api 
+          Properties:
+            Path: /arthurs/{id}/posts
+            Method: get
+            RestApiId: !Ref PostRestApi
+
+  GetArthurs:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Handler: arthurs/index.getArthurs
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableNameArthurs
+      Events:
+        GetArthursEvent:
+          Type: Api 
+          Properties:
+            Path: /arthurs
+            Method: get
+            RestApiId: !Ref PostRestApi
+
+  GetArthurById:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Handler: arthurs/index.getArthurById
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref TableNameArthurs
+      Events:
+        GetArthurByIdEvent:
+          Type: Api 
+          Properties:
+            Path: /arthurs/{id}
+            Method: get
+            RestApiId: !Ref PostRestApi
+
+  CreateArthur:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: arthurs/index.createArthur
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableNameArthurs
+      Events:
+        CreateArthurEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref PostRestApi
+            Path: /arthurs
+            Method: post
+
+            RequestModel:
+              Model: arthurModelPostPutRequest
+              Required: true
+              ValidateBody: true
 
   PostTable:
     Type: AWS::DynamoDB::Table
